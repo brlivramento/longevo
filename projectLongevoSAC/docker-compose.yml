@@ -1,0 +1,40 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www/html
+      - symfony_vendor:/var/www/html/vendor
+    depends_on:
+      database:
+        condition: service_healthy
+    command: >
+      sh -c "
+        mkdir -p var/cache var/logs &&
+        chown -R www-data:www-data var &&
+        chmod -R ug+rwX var &&
+        apache2-foreground
+      "        
+
+  database:
+    image: postgres:9.5
+    environment:
+      POSTGRES_DB: longevosac
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../longevoSAC.sql:/docker-entrypoint-initdb.d/01-longevosac.sql:ro
+      - ./docker/postgres/02-ticket-sequence.sql:/docker-entrypoint-initdb.d/02-ticket-sequence.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d longevosac"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  postgres_data:
+  symfony_vendor:
