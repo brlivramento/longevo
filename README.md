@@ -1,6 +1,6 @@
 # Customer Service System – Ticket/Support Management
 
-Customer service system featuring registration, ticket creation, and support ticket tracking. (Hiring test)
+Customer service system featuring registration, ticket creation, and support ticket tracking.
 
 ## Prerequisites
 
